@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Review Generator</title>
+
+<style>
+
+body{
+  font-family: Arial, sans-serif;
+  background:#f5f7fa;
+  padding:20px;
+  text-align:center;
+}
+
+.container{
+  max-width:420px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h2{
+  margin-bottom:5px;
+}
+
+.info{
+  font-size:14px;
+  color:#555;
+  line-height:1.5;
+}
+
+.btn{
+  padding:10px 14px;
+  margin:5px;
+  border:none;
+  border-radius:20px;
+  background:#eee;
+  cursor:pointer;
+  transition:0.2s;
+  font-size:14px;
+}
+
+.btn:hover{
+  background:#ddd;
+}
+
+.active{
+  background:#4CAF50 !important;
+  color:#fff;
+}
+
+.main-btn{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:#4CAF50;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.main-btn:hover{
+  opacity:0.95;
+}
+
+textarea{
+  width:95%;
+  height:120px;
+  margin:12px auto;
+  display:block;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  resize:none;
+  font-size:14px;
+}
+
+.bottom-text{
+  font-size:12px;
+  color:#666;
+  margin-top:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>⭐ Quick Review</h2>
+
+<p class="info">
+<b>Bas 10 Second me Review Ready</b><br>
+Select → Generate → Copy → Write Review
+</p>
+
+<!-- Language -->
+<p><b>Language</b></p>
+
+<button class="btn" onclick="setLang('en',this)">English</button>
+<button class="btn" onclick="setLang('hi',this)">Hindi</button>
+
+<!-- Service -->
+<p><b>Service</b></p>
+<div id="serviceOptions"></div>
+
+<!-- Staff -->
+<p><b>Staff</b></p>
+<div id="staffOptions"></div>
+
+<!-- Speed -->
+<p><b>Speed</b></p>
+<div id="speedOptions"></div>
+
+<!-- Generate -->
+<button class="main-btn" onclick="generate()">
+✨ Generate Review
+</button>
+
+<!-- Output -->
+<textarea id="output" placeholder="Your review will appear here..."></textarea>
+
+<!-- Copy -->
+<button class="main-btn" onclick="copyText()">
+📋 Copy Review
+</button>
+
+<!-- Write Review -->
+<button class="main-btn" onclick="goReview()">
+⭐ Write Review
+</button>
+
+<p class="bottom-text">
+Your review helps others know about better service 😊
+</p>
+
+</div>
+
+<script>
+
+let lang = "en";
+
+let data = {};
+
+const options = {
+
+  en:{
+    service:["Excellent","Good","Average"],
+    staff:["Friendly","Helpful","Professional"],
+    speed:["Fast","Quick","On time"]
+  },
+
+  hi:{
+    service:["बहुत अच्छी","अच्छी","ठीक-ठाक"],
+    staff:["मिलनसार","सहयोगी","प्रोफेशनल"],
+    speed:["तेज़","जल्दी","समय पर"]
+  }
+
+};
+
+function setLang(l,el){
+
+  lang = l;
+
+  let langBtns = el.parentNode.querySelectorAll('.btn');
+
+  langBtns.forEach(btn=>{
+    if(btn.innerText === "English" || btn.innerText === "Hindi"){
+      btn.classList.remove('active');
+    }
+  });
+
+  el.classList.add('active');
+
+  renderOptions();
+}
+
+function renderOptions(){
+
+  renderGroup("serviceOptions", options[lang].service, "service");
+
+  renderGroup("staffOptions", options[lang].staff, "staff");
+
+  renderGroup("speedOptions", options[lang].speed, "speed");
+
+}
+
+function renderGroup(id, arr, key){
+
+  let html = "";
+
+  arr.forEach(val=>{
+
+    html += `
+      <button class="btn"
+      onclick="setVal('${key}','${val}',this)">
+      ${val}
+      </button>
+    `;
+
+  });
+
+  document.getElementById(id).innerHTML = html;
+
+}
+
+function setVal(key,val,el){
+
+  data[key] = val;
+
+  let group = el.parentNode.querySelectorAll('.btn');
+
+  group.forEach(btn=>{
+    btn.classList.remove('active');
+  });
+
+  el.classList.add('active');
+
+}
+
+function rand(arr){
+
+  return arr[Math.floor(Math.random()*arr.length)];
+
+}
+
+function generate(){
+
+  if(!data.service || !data.staff || !data.speed){
+
+    alert("Please sab options select karein");
+
+    return;
+
+  }
+
+  let text = "";
+
+  // ENGLISH REVIEWS
+  if(lang === "en"){
+
+    let templates = [
+
+`I recently visited this lab and had an ${data.service.toLowerCase()} experience. The staff was very ${data.staff.toLowerCase()} and the entire process was ${data.speed.toLowerCase()}. Overall I am satisfied with the service.`,
+
+`My overall experience was ${data.service.toLowerCase()}. The staff behaved in a very ${data.staff.toLowerCase()} manner and everything was completed ${data.speed.toLowerCase()}. I would definitely recommend this lab.`,
+
+`The service quality was ${data.service.toLowerCase()} and the staff was very ${data.staff.toLowerCase()}. Everything was handled ${data.speed.toLowerCase()} and I did not face any issue.`,
+
+`I had a smooth experience here. The staff was ${data.staff.toLowerCase()} and the service was ${data.service.toLowerCase()}. Reports were delivered ${data.speed.toLowerCase()} without any problem.`
+
+    ];
+
+    text = rand(templates);
+
+  }
+
+  // HINDI REVIEWS
+  else{
+
+    let openings = [
+
+"मेरा यहाँ का अनुभव सच में अच्छा रहा।",
+
+"मैं पहली बार यहाँ आया था और अनुभव अच्छा रहा।",
+
+"कुल मिलाकर मेरा अनुभव बढ़िया रहा।",
+
+"सच कहूँ तो मुझे यहाँ आकर अच्छा लगा।"
+
+    ];
+
+    let servicePart = [
+
+`सेवा ${data.service} थी`,
+
+`यहाँ की सेवा ${data.service} लगी`,
+
+`मुझे यहाँ की सेवा ${data.service} लगी`
+
+    ];
+
+    let staffPart = [
+
+`स्टाफ ${data.staff} था`,
+
+`स्टाफ का व्यवहार ${data.staff} था`,
+
+`यहाँ का स्टाफ काफी ${data.staff} है`
+
+    ];
+
+    let speedPart = [
+
+`काम ${data.speed} हो गया`,
+
+`पूरा काम ${data.speed} हुआ`,
+
+`रिपोर्ट ${data.speed} मिल गई`
+
+    ];
+
+    let endings = [
+
+"मुझे कोई परेशानी नहीं हुई।",
+
+"सब कुछ आसानी से हो गया।",
+
+"मैं यहाँ फिर से आना चाहूँगा।",
+
+"कुल मिलाकर अच्छा अनुभव रहा।"
+
+    ];
+
+    text =
+      rand(openings) + " " +
+      rand(servicePart) + ", " +
+      rand(staffPart) + " और " +
+      rand(speedPart) + "। " +
+      rand(endings);
+
+    // Short review sometimes
+    if(Math.random() > 0.6){
+
+      text = rand([
+
+`${rand(servicePart)}, ${rand(staffPart)} और ${rand(speedPart)}।`,
+
+`${rand(servicePart)}। ${rand(staffPart)} और ${rand(speedPart)}।`
+
+      ]);
+
+    }
+
+  }
+
+  document.getElementById("output").value = text;
+
+}
+
+function copyText(){
+
+  let text = document.getElementById("output").value;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Review copied!");
+
+}
+
+function goReview(){
+
+  window.open(
+    "https://search.google.com/local/writereview?placeid=YOUR_PLACE_ID",
+    "_blank"
+  );
+
+}
+
+renderOptions();
+
+</script>
+
+</body>
+</html>
